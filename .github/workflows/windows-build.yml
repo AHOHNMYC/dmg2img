@@ -10,15 +10,15 @@ jobs:
     strategy:
       matrix:
         include:
-          - {chain: mingw32, cc: gcc}
+#          - {chain: mingw32, cc: gcc}
           - {chain: mingw64, cc: gcc}
-          - {chain: clang64, cc: clang}
+#          - {chain: clang64, cc: clang}
     steps:
       - uses: actions/checkout@v3
       - uses: msys2/setup-msys2@v2
         with:
           msystem: ${{matrix.chain}}
-          install: make pkgconf
+          install: make pkgconf libbz2-devel
           pacboy: ${{matrix.cc}}:p
       - name: Compile .exe
         run: |
