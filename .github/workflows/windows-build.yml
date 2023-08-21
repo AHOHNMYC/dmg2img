@@ -1,0 +1,32 @@
+name: Windows build
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+    strategy:
+      matrix:
+        include:
+          - {chain: mingw32, cc: gcc}
+          - {chain: mingw64, cc: gcc}
+          - {chain: clang64, cc: clang}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: ${{matrix.chain}}
+          install: make pkgconf
+          pacboy: ${{matrix.cc}}:p
+      - name: Compile .exe
+        run: |
+          make dmg2img
+          mv dmg2img dmg2img-${{matrix.chain}}.exe
+      - name: Upload .exe
+        uses: actions/upload-artifact@v3
+        with:
+          name: dmg2img.exe
+          path: |
+            dmg2img-*.exe
